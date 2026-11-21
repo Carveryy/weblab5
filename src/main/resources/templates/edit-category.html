@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Редагувати категорію</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css(v=1)}">
+</head>
+<body>
+<h2>Редагувати категорію</h2>
+<form th:action="@{/categories/update/{id}(id=${category.id})}" method="post"
+      onsubmit="return confirm('Зберегти зміни?');">
+    <label>Назва:</label>
+    <input type="text" name="name" th:value="${category.name}" required>
+    <button type="submit">Зберегти</button>
+</form>
+<p><a th:href="@{/categories}">Повернутися до списку</a></p>
+</body>
+</html>
