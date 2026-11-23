@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Категорії</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css(v=1)}">
+</head>
+<body>
+<div class="nav">
+    <a th:href="@{/drinks}">🥤 Напої</a>
+    <a th:href="@{/categories}">📂 Категорії</a>
+</div>
+
+<h2>Список категорій</h2>
+<table>
+    <tr><th>ID</th><th>Назва</th><th>Дії</th></tr>
+    <tr th:each="cat : ${categories}">
+        <td th:text="${cat.id}"></td>
+        <td th:text="${cat.name}"></td>
+        <td>
+            <div class="actions">
+                <a th:href="@{/categories/edit/{id}(id=${cat.id})}">Редагувати</a>
+                <form class="inline" th:action="@{/categories/delete/{id}(id=${cat.id})}" method="post"
+                      onsubmit="return confirm('Видалити цю категорію? Напої цієї категорії залишаться без категорії.');">
+                    <button type="submit" class="btn-link">Видалити</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<hr>
+<h3>Додати категорію</h3>
+<form th:action="@{/categories/add}" method="post"
+      onsubmit="return confirm('Додати нову категорію?');">
+    <label>Назва:</label>
+    <input type="text" name="name" required>
+    <button type="submit" class="btn-green">Додати</button>
+</form>
+</body>
+</html>

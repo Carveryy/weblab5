@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Облік напоїв</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css(v=1)}">
+</head>
+<body>
+<div class="nav">
+    <a th:href="@{/drinks}">🥤 Напої</a>
+    <a th:href="@{/categories}">📂 Категорії</a>
+</div>
+
+<h2>Список напоїв</h2>
+<p>Знайдено записів: <span th:text="${#lists.size(drinks)}"></span></p>
+
+<table>
+    <tr><th>ID</th><th>Назва</th><th>Категорія</th><th>Об'єм (л)</th><th>Ціна (грн)</th><th>Дії</th></tr>
+    <tr th:if="${#lists.isEmpty(drinks)}">
+        <td colspan="6">Нічого не знайдено</td>
+    </tr>
+    <tr th:each="drink : ${drinks}">
+        <td th:text="${drink.id}"></td>
+        <td th:text="${drink.name}"></td>
+        <td th:text="${drink.category != null ? drink.category.name : '-'}"></td>
+        <td th:text="${drink.volume}"></td>
+        <td th:text="${drink.price}"></td>
+        <td>
+            <div class="actions">
+                <a th:href="@{/drinks/edit/{id}(id=${drink.id})}">Редагувати</a>
+                <form class="inline" th:action="@{/drinks/delete/{id}(id=${drink.id})}" method="post"
+                      onsubmit="return confirm('Ви дійсно хочете видалити цей напій? Ця дія незворотна.');">
+                    <button type="submit" class="btn-link">Видалити</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<div class="bottom-row">
+
+    <div class="panel">
+        <h3>Додати напій</h3>
+        <form th:action="@{/drinks/add}" th:object="${newDrink}" method="post"
+              onsubmit="return confirm('Додати новий напій?');">
+            <label>Назва:</label>
+            <input type="text" th:field="*{name}" required>
+
+            <label>Категорія:</label>
+            <select name="categoryId">
+                <option value="">Оберіть</option>
+                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+            </select>
+
+            <label>Об'єм (л):</label>
+            <input type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,3})?"
+                   title="Число, наприклад 0.5 або 0,5" th:field="*{volume}" required>
+
+            <label>Ціна (грн):</label>
+            <input type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?"
+                   title="Число, наприклад 25.50 або 25,50" th:field="*{price}" required>
+
+            <button type="submit">Додати</button>
+        </form>
+    </div>
+
+    <div class="panel">
+        <h3>Пошук і фільтрація</h3>
+        <form th:action="@{/drinks}" method="get">
+            <label>Назва містить:</label>
+            <input type="text" name="name" th:value="${filterName}">
+
+            <label>Категорія:</label>
+            <select name="categoryId">
+                <option value="">Усі</option>
+                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"
+                        th:selected="${filterCategoryId != null and filterCategoryId == cat.id}"></option>
+            </select>
+
+            <label>Об'єм від (л):</label>
+            <input type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,3})?"
+                   title="Число, наприклад 0.5 або 0,5" name="minVolume" th:value="${filterMinVolume}">
+
+            <label>Об'єм до (л):</label>
+            <input type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,3})?"
+                   title="Число, наприклад 0.5 або 0,5" name="maxVolume" th:value="${filterMaxVolume}">
+
+            <label>Ціна від (грн):</label>
+            <input type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?"
+                   title="Число, наприклад 25.50 або 25,50" name="minPrice" th:value="${filterMinPrice}">
+
+            <label>Ціна до (грн):</label>
+            <input type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?"
+                   title="Число, наприклад 25.50 або 25,50" name="maxPrice" th:value="${filterMaxPrice}">
+
+            <div class="form-buttons">
+                <button type="submit">Знайти</button>
+                <a class="btn-secondary" th:href="@{/drinks}">Скинути</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('submit', function (e) {
+        e.target.querySelectorAll('input[inputmode="decimal"]').forEach(function (input) {
+            input.value = input.value.replace(',', '.');
+        });
+    }, true);
+</script>
+</body>
+</html>
